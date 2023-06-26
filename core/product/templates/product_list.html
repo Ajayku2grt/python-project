@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>Product List</h2>
+  <a class="btn btn-primary float-end" href="{% url 'product_create' %}">Add Product</a>
+  <table class="table table-striped" id="productTable">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <!-- <tbody>
+        {% for product in products %}
+          <tr>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td>{{product.description}}</td>
+            <td>
+              <div class="">
+                <a href="{% url 'product_detail' product.pk %}">Show</a>&nbsp;
+                <form method="post" action="{% url 'product_delete' product.pk %}">
+                  {% csrf_token %}
+                  <button type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody> -->
+  </table>
+</div>
+
+</body>
+<link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script>
+
+  
+    $(document).ready(function () {
+        $('#productTable').DataTable({
+            ajax: {
+                url: 'product',
+                type: 'GET',
+                dataType: 'json',
+                dataSrc: 'data',
+            },
+            columns: [
+                { "data": 'name',"name":'name','orderable': false, 'searchable': false,'width':'5%'},
+                { "data": "price","name":"price",defaultContent:''},
+                { "data": "id",orderable: false, searchable: false,visible:true},
+            ],
+            "columnDefs": [
+                {render: function (data, type, row, meta) {
+                        if(data){
+                          // var csrf = "{% csrf_token %}";
+                          // console.log(csrf);
+                          var editUrl = "{% url 'product_detail' 0 %}".replace('0', data);
+                          var deleteUrl = "{% url 'product_delete' 0 %}".replace('0', data);
+
+                          return '<div class="row">' +
+                              '<a class="btn btn-primary" href="' + editUrl + '">Show</a>' +
+                              '<form method="post" action="' + deleteUrl + '">' +
+                                '{% csrf_token %}' +
+
+                              '<button type="submit" class="btn btn-danger">Delete</button>' +
+                              '</form>' +
+                              '</div>';
+                         
+                        }
+                        return data;
+                  },
+                  "targets":-1,
+                },
+            ],
+        });
+    });
+
+</script>
+</html>
